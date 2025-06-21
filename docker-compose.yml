@@ -1,0 +1,40 @@
+services:
+  db_food:
+      image: mysql:latest
+      container_name: db_food
+      environment:
+        MYSQL_ROOT_PASSWORD: skip
+        MYSQL_DATABASE: skip
+        MYSQL_USER: skip
+        MYSQL_PASSWORD: skip
+      ports:
+        - "31401:3306"
+      volumes:
+        - ./migrations/:/docker-entrypoint-initdb.d
+        - mysql_data:/var/lib/mysql
+      restart: always
+      networks:
+        - foodmake-network
+
+  foodmake_bot:
+    build:
+      context: .
+      dockerfile: Dockerfile
+    restart: always
+    container_name: foodmake_bot
+    volumes:
+        - .:/app
+    ports:
+      - "31402:31402"
+    depends_on:
+      - db_food
+    networks:
+      - foodmake-network
+
+networks:
+  foodmake-network:
+    driver: bridge 
+
+volumes:
+  mysql_data:
+
